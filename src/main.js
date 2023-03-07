@@ -6,9 +6,11 @@ import router from '@/router'
 // 引入组件
 import TypeNav from'@/components/TypeNav'
 import Carousel from '@/components/Carousel'
+import Pagination from '@/components/Pagination'
 // 注册全局组件(第一个参数为全局组件名，第二个参数是指哪一个组件)
 Vue.component(TypeNav.name,TypeNav)
 Vue.component(Carousel.name,Carousel)
+Vue.component(Pagination.name,Pagination)
 // 注册
 import store from '@/store'
 // 引入Mockserverjs=mock数据

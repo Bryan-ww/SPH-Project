@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TypeNav/>
+    <TypeNav />
     <div class="main">
       <div class="py-container">
         <!--bread-->
@@ -21,10 +21,17 @@
               {{ searchParams.keyword }}<i @click="removeKeyword">×</i>
             </li>
             <!-- 品牌的面包屑 -->
-            <li class="with-x" v-if="searchParams.trademark">{{ searchParams.trademark.split(":")[1]}}<i @click="removeTrademark">×</i>
+            <li class="with-x" v-if="searchParams.trademark">
+              {{ searchParams.trademark.split(":")[1]
+              }}<i @click="removeTrademark">×</i>
             </li>
             <!-- 平台售卖属性面包屑：这是个数组，不能再用v-if了，要用v-for遍历 -->
-            <li class="with-x" v-for="(attrValue,index) in searchParams.props" :key="index">{{attrValue.split(':')[2]}}<i @click="removeAttr(index)">×</i>
+            <li
+              class="with-x"
+              v-for="(attrValue, index) in searchParams.props"
+              :key="index"
+            >
+              {{ attrValue.split(":")[2] }}<i @click="removeAttr(index)">×</i>
             </li>
           </ul>
         </div>
@@ -41,11 +48,27 @@
           <div class="sui-navbar">
             <div class="navbar-inner filter">
               <ul class="sui-nav">
-                <li  :class="{active:isOne}" @click="changeOrder(true)">
-                  <a>综合<span v-show="isOne" :class="['iconfont',{'icon-up':isAsc,'icon-down':isDesc}]"></span></a>
+                <li :class="{ active: isOne }" @click="changeOrder(true)">
+                  <a
+                    >综合<span
+                      v-show="isOne"
+                      :class="[
+                        'iconfont',
+                        { 'icon-up': isAsc, 'icon-down': isDesc },
+                      ]"
+                    ></span
+                  ></a>
                 </li>
-                <li :class="{active:isTwo}" @click="changeOrder(false)">
-                  <a>价格<span v-show="isTwo" :class="['iconfont',{'icon-up':isAsc,'icon-down':isDesc}]"></span></a>
+                <li :class="{ active: isTwo }" @click="changeOrder(false)">
+                  <a
+                    >价格<span
+                      v-show="isTwo"
+                      :class="[
+                        'iconfont',
+                        { 'icon-up': isAsc, 'icon-down': isDesc },
+                      ]"
+                    ></span
+                  ></a>
                 </li>
               </ul>
             </div>
@@ -60,9 +83,10 @@
               >
                 <div class="list-wrap">
                   <div class="p-img">
-                    <a href="item.html" target="_blank"
+                    <!-- 点击图片进行路由跳转到详情页，注意跳转的时候需要穿参数，传入商品ID（params）参数 -->
+                    <router-link :to="`/detail/${good.id}`"
                       ><img :src="good.defaultImg"
-                    /></a>
+                    /></router-link>
                   </div>
                   <div class="price">
                     <strong>
@@ -97,35 +121,13 @@
             </ul>
           </div>
           <!-- 分页器 -->
-          <div class="fr page">
-            <div class="sui-pagination clearfix">
-              <ul>
-                <li class="prev disabled">
-                  <a href="#">«上一页</a>
-                </li>
-                <li class="active">
-                  <a href="#">1</a>
-                </li>
-                <li>
-                  <a href="#">2</a>
-                </li>
-                <li>
-                  <a href="#">3</a>
-                </li>
-                <li>
-                  <a href="#">4</a>
-                </li>
-                <li>
-                  <a href="#">5</a>
-                </li>
-                <li class="dotted"><span>...</span></li>
-                <li class="next">
-                  <a href="#">下一页»</a>
-                </li>
-              </ul>
-              <div><span>共10页&nbsp;</span></div>
-            </div>
-          </div>
+          <Pagination
+            :pageNo="searchParams.pageNo"
+            :pageSize="searchParams.pageSize"
+            :total="total"
+            :continues="5"
+            @getPageNo="getPageNo"
+          />
         </div>
       </div>
     </div>
@@ -133,7 +135,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapState } from "vuex";
 import SearchSelector from "./SearchSelector/SearchSelector";
 export default {
   name: "Search",
@@ -150,11 +152,11 @@ export default {
         // 搜索关键字
         keyword: "",
         // 排序方式:默认综合
-        order: "2:asc",
+        order: "1:desc",
         // 页码默认为1
         pageNo: 1,
         // 每页数量
-        pageSize: 10,
+        pageSize: 3,
         // 商品属性的数组
         props: [],
         // 品牌:
@@ -177,18 +179,22 @@ export default {
   },
   computed: {
     ...mapGetters(["goodsList"]),
-    isOne(){
-      return this.searchParams.order.indexOf(1)!==-1
+    isOne() {
+      return this.searchParams.order.indexOf(1) !== -1;
     },
-    isTwo(){
-      return this.searchParams.order.indexOf(2)!==-1
+    isTwo() {
+      return this.searchParams.order.indexOf(2) !== -1;
     },
-    isDesc(){
-      return this.searchParams.order.indexOf('desc')!==-1
+    isDesc() {
+      return this.searchParams.order.indexOf("desc") !== -1;
     },
-    isAsc(){
-      return this.searchParams.order.indexOf('asc')!==-1
-    }
+    isAsc() {
+      return this.searchParams.order.indexOf("asc") !== -1;
+    },
+    // 拿到厂库中的总数据
+    ...mapState({
+      total: (state) => state.search.searchList.total,
+    }),
   },
   methods: {
     // 将search发送请求封装为一个函数，根据参数的不同发送不同的请求
@@ -237,33 +243,42 @@ export default {
     },
     // 自定义事件
     getAttrInfo(attr, attrValue) {
-      console.log(attr,attrValue );
+      // console.log(attr,attrValue );
       // 整理参数 //[”属性ID:属性值:属性名"]
-      let props=` ${attr.attrId}:${attr.attrName}:${attrValue}`
+      let props = ` ${attr.attrId}:${attr.attrName}:${attrValue}`;
       // 这里需要数组去重,因为有重复的元素,需要判断
-      if(this.searchParams.props.indexOf(props)===-1){
-         this.searchParams.props.push(props)
+      if (this.searchParams.props.indexOf(props) === -1) {
+        this.searchParams.props.push(props);
       }
       // 发送请求
       this.getData();
     },
-    removeAttr(index){
+    removeAttr(index) {
       // 整理参数
-      this.searchParams.props.splice(index,1)
+      this.searchParams.props.splice(index, 1);
       // 发送请求
-      this.getData()
+      this.getData();
     },
-    changeOrder(flag){
-      let orginOrder = this.searchParams.order
-      let originFlag = orginOrder.split(':')[0]
-      let originSort = orginOrder.split(':')[1]
-      let nextFlag= flag?1:2;
-      let nextSort='desc'
-      if(nextFlag==originFlag) {
-         nextSort=originSort=='desc'?'asc':'desc'
+    changeOrder(flag) {
+      let orginOrder = this.searchParams.order;
+      let originFlag = orginOrder.split(":")[0];
+      let originSort = orginOrder.split(":")[1];
+      let nextFlag = flag ? 1 : 2;
+      let nextSort = "desc";
+      if (nextFlag == originFlag) {
+        nextSort = originSort == "desc" ? "asc" : "desc";
       }
-      this.searchParams.order=`${nextFlag}:${nextSort}`
-    }
+      this.searchParams.order = `${nextFlag}:${nextSort}`;
+      // 再次发请求
+      this.getData();
+    },
+    // 绑定自定义事件
+    getPageNo(pageNo) {
+      //  整理参数
+      this.searchParams.pageNo = pageNo;
+      // 再发请求
+      this.getData();
+    },
   },
   //数据监听: 监听组件实例身上的属性的属性值变化
   watch: {
@@ -615,5 +630,8 @@ export default {
       }
     }
   }
+}
+.active {
+  background: skyblue;
 }
 </style>
