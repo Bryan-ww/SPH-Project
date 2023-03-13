@@ -7,6 +7,8 @@ Vue.use(Vuex)
  import search from './search'
  import detail from './detail'
  import carlist from './carlist'
+ import user from './user'
+ import trade from './trade'
 // 创建并暴露Store实例
 
 export default new Vuex.Store({
@@ -15,6 +17,8 @@ export default new Vuex.Store({
         home,
         search,
         detail,
-        carlist
+        carlist,
+        user,
+        trade
     }
 })

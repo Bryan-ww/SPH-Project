@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h1 v-upper='msg'>您好</h1>
     <Header></Header>
     <router-view></router-view>
     <!-- footer的显示与隐藏 -->
@@ -13,6 +14,11 @@
     import Footer from './components/Footer'
     export default {
         name:'App',
+        data(){
+          return{
+            msg:'abc'
+          }
+        },
         components:{
           Header,Footer
         },

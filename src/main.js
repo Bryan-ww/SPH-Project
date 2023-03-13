@@ -17,16 +17,39 @@ import store from '@/store'
 import  '@/mock/mockServe'
 // 引入swiper样式
 import 'swiper/swiper-bundle.css';
- 
+//  统一引入API
+import * as API from '@/api';
+// 按需引入UI button
+import {Button,MessageBox} from 'element-ui';
+// 使用插件
+Vue.component(Button.name, Button);
+// 使用msgbox
+Vue.prototype.$msgbox = MessageBox;
+Vue.prototype.$alert = MessageBox.alert;
+// 引入 lazyload
+import VueLazyload from 'vue-lazyload'
+// 引入默认的图片
+import atm from '@/assets/images/1.gif'
+Vue.use(VueLazyload, {
+  // 懒加载默认的图片
+  loading: atm 
+})
+// 
+import '@/plugins/validate';
 
-
+// 引入自定义插件
+import myPlugins from '@/plugins/myPlugins'
+Vue.use(myPlugins,{
+  name:'upper'
+})
 
 Vue.config.productionTip = false
 
 new Vue({ 
   render: h => h(App),
   beforeCreate(){
-    Vue.prototype.$bus = this
+    Vue.prototype.$bus = this;
+    Vue.prototype.$API = API;
   },
   //注册路由信息: 当这里书写router的时候，组件身上都拥有$route,$router属性
   router,

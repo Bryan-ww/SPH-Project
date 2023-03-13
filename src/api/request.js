@@ -18,6 +18,10 @@ requests.interceptors.request.use((config)=>{
         //请求头添加一个字段:和后台老师商量好了
         config.headers.userTempId= store.state.detail.uuid_token
     }
+    // 验证用户是否带有token信息
+    if(store.state.user.token){
+        config.headers.token=store.state.user.token
+    }
     // 请求时，进度条开始动
     nprogress.start()
     return config;
